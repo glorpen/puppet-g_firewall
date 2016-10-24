@@ -12,7 +12,6 @@
 #
 define g_firewall (
   $protocol = undef,
-  $is_post_rule = false,
   
   $action = undef,
   $source = undef,
@@ -207,12 +206,6 @@ define g_firewall (
   
   include ::g_firewall::params
   
-  if $is_post_rule {
-    $post_opts = {'before'=>undef}
-  } else {
-    $post_opts = {}
-  }
-  
   if $protocol == undef {
     $_protocols = $::g_firewall::params::protocols
   } else {
@@ -225,6 +218,6 @@ define g_firewall (
       'IPv4' => 'iptables',
       'IPv6' => 'ip6tables'
     }
-    create_resources(firewall, {$_title => merge($opts, {'provider' => $_provider }, $post_opts)})
+    create_resources(firewall, {$_title => merge($opts, {'provider' => $_provider })})
   }
 }
