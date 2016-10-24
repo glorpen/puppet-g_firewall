@@ -1,0 +1,44 @@
+{
+  "author": "Arkadiusz Dzięgiel",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">=4.0.0"
+    },
+    {
+      "name": "puppetlabs-firewall",
+      "version_requirement": ">=1.8.0"
+    }
+  ],
+  "license": "Propertiary",
+  "name": "glorpen-g_firewall",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    }
+  ],
+  "project_page": "",
+  "requirements":[
+     {
+      "name": "puppet",
+      "version_requirement": ">= 4.0.0 < 5.0.0"
+    }
+  ],
+  "source": "ssh://git@puppet.glorpen.eu/modules/g_firewall.git",
+  "summary": "Friendly wrapper for puppetlabs/firewall",
+  "tags": [],
+  "version": "0.1.0"
+}
