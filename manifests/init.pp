@@ -12,6 +12,7 @@
 #
 define g_firewall (
   $protocol = undef,
+  $is_post_rule = false,
   
   $action = undef,
   $source = undef,
@@ -204,27 +205,26 @@ define g_firewall (
     'string_to' => $string_to,
   }.filter |$key, $value| { $value != undef }
   
-  if $protocol == undef {
-    $_protocols = [
-      $facts['iptables_version']?{
-        undef => undef,
-        default => 4
-      },
-      $facts['ip6tables_version']?{
-        undef => undef,
-        default => 6
-      },
-    ].filter |$v| { $v != undef }
+  include ::g_firewall::params
+  
+  if $is_post_rule {
+    $post_opts = {'before'=>undef}
   } else {
-    $_protocols = flatten([$protocol])
+    $post_opts = {}
+  }
+  
+  if $protocol == undef {
+    $_protocols = $::g_firewall::params::protocols
+  } else {
+    $_protocols = intersection(flatten([$protocol]), $::g_firewall::params::protocols)
   }
   
   $_protocols.each |$p| {
-    $_title = "${title}.ipv${p}"
+    $_title = ::g_firewall::normalize_name($title, $p)
     $_provider = $p?{
-      4 => 'iptables',
-      6 => 'ip6tables'
+      'IPv4' => 'iptables',
+      'IPv6' => 'ip6tables'
     }
-    create_resources(firewall, {$_title => merge($opts, { 'provider' => $_provider })})
+    create_resources(firewall, {$_title => merge($opts, {'provider' => $_provider }, $post_opts)})
   }
 }
