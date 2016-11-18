@@ -21,6 +21,6 @@ class g_firewall::params {
   
   $chains = {
     'IPv4' => merge($_mangle_chain, $_filter_chain, $_raw_chain, $_nat_chain),
-    'IPv6' => merge($_mangle_chain, $_filter_chain, $_raw_chain)
+    'IPv6' => merge($_mangle_chain, $_filter_chain, $_raw_chain, $_nat_chain)
   }
 }
