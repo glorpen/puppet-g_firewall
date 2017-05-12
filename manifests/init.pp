@@ -120,7 +120,6 @@ define g_firewall (
     'port' => $port,
     'dst_type' => $dst_type,
     'src_type' => $src_type,
-    'proto' => $proto,
     'mss' => $mss,
     'tcp_flags' => $tcp_flags,
     'chain' => $chain,
@@ -218,6 +217,21 @@ define g_firewall (
       'IPv4' => 'iptables',
       'IPv6' => 'ip6tables'
     }
-    create_resources(firewall, {$_title => merge($opts, {'provider' => $_provider })})
+    
+    if $p == "IPv6" {
+      # fix icmp for ipv6
+      $fixed_proto = $proto?{
+        'icmp' => 'ipv6-icmp',
+        default => $proto
+      }
+    } else {
+      $fixed_proto = $proto
+    }
+    
+    $fixes = {
+      'proto' => $fixed_proto
+    }.filter |$key, $value| { $value != undef }
+    
+    create_resources(firewall, {$_title => merge($opts, $fixes, {'provider' => $_provider })})
   }
 }
