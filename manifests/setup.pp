@@ -33,6 +33,11 @@ class g_firewall::setup(
     
     class { '::firewall': }
     
+    # add internal chains to catalog, so no warnings and errors are printed
+    g_firewall_syschain { 'default' :
+      regex => '^(PREROUTING|POSTROUTING|BROUTING|INPUT|FORWARD|OUTPUT)$'
+    }
+    
   }
   
 }
