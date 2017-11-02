@@ -6,6 +6,8 @@
 # like we'll need to maintain this for some time perhaps.
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..",".."))
 
+require 'puppet/util/overrides'
+
 Puppet::Type.newtype(:g_firewall_protect) do
   @doc = <<-EOS
     This type provides the capability to manage purging rules in firewall chains.
@@ -55,37 +57,10 @@ Puppet::Type.newtype(:g_firewall_protect) do
     end
   end
   
-  def protected_instances
-    value(:chain).match(Nameformat)
-    chain = $1
-    table = $2
-    protocol = $3
-    
-    provider = case protocol
-       when 'IPv4'
-         :iptables
-       when 'IPv6'
-         :ip6tables
-       end
-    
-    catalog.resources.select {|res| res.class == Puppet::Type::Firewall}.select{|res|
-      # has to be read from system, not freshly created by puppet
-      # has to have matching provider, table and chain name
-      # has to have matching code
-      res.provider.properties[:line] \
-      and res[:provider] == provider and res.provider.properties[:table].to_s == table and res.provider.properties[:chain] == chain \
-      and value(:regex).find_index{|f| res.provider.properties[:line].match(f)}
-    }
-  end
-  
-  autorequire(name) do
-    self.protected_instances
-  end
-  
-  def generate
-    self.protected_instances.each {|r|
-      r[:ensure] = :present
-    }
+  autorequire(:firewallchain) do
+    if catalog.resources.select {|x| x.class == Puppet::Type::Firewallchain and (x[:name] == self[:chain]) }.empty?
+      warning "Target Firewallchain with name of #{self[:chain]} not found in the catalog"
+    end
   end
   
 end
