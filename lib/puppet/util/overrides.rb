@@ -24,11 +24,9 @@ module FirewallchainFixes
     # Remove rules which match our ignore filter
     rules_resources.delete_if {|res| value(:ignore).find_index{|f| res.provider.properties[:line].match(f)}} if value(:ignore)
     
-    # Remove rules which match created firewallchain_ignore types
+    # Remove rules which match created g_firewall_protect types
     catalog.resources.select {
       |r| r.is_a?(Puppet::Type.type(:g_firewall_protect)) && r[:chain] == self[:name]
-    }.select {
-      |res| res[:chain] == name
     }.each { 
       |ignored_resource| rules_resources.delete_if {|res| ignored_resource[:regex].find_index{|f| res.provider.properties[:line].match(f) }}
     }
