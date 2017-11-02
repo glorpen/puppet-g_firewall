@@ -27,26 +27,47 @@ Puppet::Type.newtype(:g_firewall_syschain) do
     end
   end
   
-  def system_chains
-    catalog.resources.select {|res| res.class == Puppet::Type::Firewallchain}.select{|res|
-      
+  autorequire(:firewallchain) do
+    catalog.resources.collect do |r|
+      if r.is_a?(Puppet::Type.type(:firewallchain))
+        r[:name].match(Nameformat)
+            chain = $1
+            table = $2
+            protocol = $3
+        if chain == self[:name]
+          r.name
+        end
+      end
+    end.compact
+  end
+  
+  def generate
+    chain_resources = Puppet::Type.type(:firewallchain).instances
+    
+    chain_resources.delete_if {|res|
       res.provider.properties[:name].match(Nameformat)
           chain = $1
           table = $2
           protocol = $3
           
-      value(:regex) =~ chain
+      value(:regex) !~ chain
     }
-  end
-  
-  autorequire(name) do
-    self.system_chains
-  end
-  
-  def generate
-    self.system_chains.each {|r|
-      r[:ensure] = :present
+    
+    chain_resources.each {|res|
+      res[:ensure] = :present
     }
+    
+    # override catalog
+    catalog.resources.select {|res|
+      res.class == Puppet::Type::Firewallchain
+    }.select{ |res|
+      not chain_resources.select {|r|
+        res[:name] == r[:name]
+      }.empty?
+    }.each {|res|
+      res[:ensure] = :present
+    }
+    
+    chain_resources
   end
-  
 end
