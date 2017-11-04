@@ -1,5 +1,7 @@
 
-module FirewallchainFixes
+# Module#prepend is not available in JRuby 1.9
+
+class Puppet::Type::Firewallchain
   def generate
     return [] unless self.purge?
 
@@ -36,8 +38,4 @@ module FirewallchainFixes
 
     rules_resources
   end
-end
-
-class Puppet::Type::Firewallchain
-  prepend FirewallchainFixes
 end
