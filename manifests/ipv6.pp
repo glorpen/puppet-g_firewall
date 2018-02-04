@@ -1,4 +1,5 @@
 define g_firewall::ipv6(
+  $ensure = present,
   $action = undef,
   $source = undef,
   $src_range = undef,
@@ -93,6 +94,7 @@ define g_firewall::ipv6(
   $string_to = undef,
 ){
   ::g_firewall{ ::g_firewall::normalize_name($title, 'IPv6'):
+    ensure => $ensure,
     protocol => ['IPv6'],
     action => $action,
     source => $source,

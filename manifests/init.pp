@@ -11,6 +11,7 @@
 # Sample Usage:
 #
 define g_firewall (
+  $ensure = present,
   $protocol = undef,
   
   $action = undef,
@@ -110,6 +111,7 @@ define g_firewall (
   include ::stdlib
   
   $opts = {
+    'ensure' => $ensure,
     'action' => $action,
     'source' => $source,
     'src_range' => $src_range,
