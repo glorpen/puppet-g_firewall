@@ -13,7 +13,7 @@
 define g_firewall (
   $ensure = present,
   $protocol = undef,
-  
+
   $action = undef,
   $source = undef,
   $src_range = undef,
@@ -107,9 +107,9 @@ define g_firewall (
   $string_from = undef,
   $string_to = undef,
 ){
-  
+
   include ::stdlib
-  
+
   $opts = {
     'ensure' => $ensure,
     'action' => $action,
@@ -204,23 +204,23 @@ define g_firewall (
     'string_from' => $string_from,
     'string_to' => $string_to,
   }.filter |$key, $value| { $value != undef }
-  
+
   include ::g_firewall::params
-  
+
   if $protocol == undef {
     $_protocols = $::g_firewall::params::protocols
   } else {
     $_protocols = intersection(flatten([$protocol]), $::g_firewall::params::protocols)
   }
-  
+
   $_protocols.each |$p| {
     $_title = ::g_firewall::normalize_name($title, $p)
     $_provider = $p?{
       'IPv4' => 'iptables',
       'IPv6' => 'ip6tables'
     }
-    
-    if $p == "IPv6" {
+
+    if $p == 'IPv6' {
       # fix icmp for ipv6
       $fixed_proto = $proto?{
         'icmp' => 'ipv6-icmp',
@@ -229,11 +229,11 @@ define g_firewall (
     } else {
       $fixed_proto = $proto
     }
-    
+
     $fixes = {
       'proto' => $fixed_proto
     }.filter |$key, $value| { $value != undef }
-    
+
     create_resources(firewall, {$_title => merge($opts, $fixes, {'provider' => $_provider })})
   }
 }
