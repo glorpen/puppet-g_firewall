@@ -1,44 +1,63 @@
 {
+  "name": "glorpen-g_firewall",
+  "version": "0.2.0",
   "author": "Arkadiusz Dzięgiel",
+  "summary": "Puppet module to ease firewall rule management",
+  "license": "GPL-3.0+",
+  "source": "https://github.com/glorpen/puppet-g_firewall.git",
+  "project_page": "https://github.com/glorpen/puppet-g_firewall",
+  "issues_url": "https://github.com/glorpen/puppet-g_firewall/issues",
   "dependencies": [
     {
-      "name": "puppetlabs-stdlib",
+      "name": "puppetlabs/stdlib",
       "version_requirement": ">=4.0.0"
     },
     {
-      "name": "puppetlabs-firewall",
+      "name": "puppetlabs/firewall",
       "version_requirement": ">=1.8.0"
     }
   ],
-  "license": "GPL-3.0+",
-  "name": "glorpen-g_firewall",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
+      "operatingsystemrelease": ["5", "6", "7"]
     },
     {
       "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
+      "operatingsystemrelease": ["5", "6", "7"]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": ["6", "7"]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": ["5", "6", "7"]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": ["11 SP1", "12"]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": ["6", "7", "8"]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["14.04", "16.04"]
+    },
+    {
+      "operatingsystem": "Gentoo",
+      "operatingsystemrelease": ["1.0"]
     }
-  ],
-  "project_page": "",
-  "requirements":[
-     {
+],
+  "requirements": [
+    {
       "name": "puppet",
       "version_requirement": ">= 4.0.0 < 6.0.0"
     }
   ],
-  "source": "ssh://git@puppet.glorpen.eu/modules/g_firewall.git",
-  "summary": "Puppet module to ease firewall rule management",
-  "tags": [],
-  "version": "0.2.0"
+  "tags": [
+
+  ]
 }
