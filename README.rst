@@ -10,6 +10,9 @@ Default firewall rules
 
 Including ``g_firewall::setup`` will setup default firewall rules and resource purging.
 
+**WARNING** Remember that by default all packets will be dropped, so applying it on remote server without creating
+rule for allowing ssh is a bad idea. 
+
 IPv4 or IPv6
 ============
 
