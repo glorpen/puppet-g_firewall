@@ -4,20 +4,20 @@
 # In this case I'm trying the relative path first, then falling back to normal
 # mechanisms. This should be fixed in future versions of puppet but it looks
 # like we'll need to maintain this for some time perhaps.
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..",".."))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
 
 Puppet::Type.newtype(:g_firewall_syschain) do
   @doc = <<-EOS
     This type allows to disable purging of built-in chains.
   EOS
-  
+
   newparam(:name) do
     desc <<-EOS
       The name of chain.
     EOS
     isnamevar
   end
-  
+
   newparam(:regex) do
     desc <<-EOS
       Regex to find internal chains.
@@ -26,48 +26,37 @@ Puppet::Type.newtype(:g_firewall_syschain) do
       Regexp.new(pattern)
     end
   end
-  
+
   autorequire(:firewallchain) do
-    catalog.resources.collect do |r|
-      if r.is_a?(Puppet::Type.type(:firewallchain))
-        r[:name].match(Nameformat)
-            chain = $1
-            table = $2
-            protocol = $3
-        if chain == self[:name]
-          r.name
-        end
+    catalog.resources.map { |r|
+      next unless r.is_a?(Puppet::Type.type(:firewallchain))
+      r[:name].match(Nameformat)
+      chain = Regexp.last_match(1)
+      if chain == self[:name]
+        r.name
       end
-    end.compact
+    }.compact
   end
-  
+
   def generate
     chain_resources = Puppet::Type.type(:firewallchain).instances
-    
-    chain_resources.delete_if {|res|
+
+    chain_resources.delete_if do |res|
       res.provider.properties[:name].match(Nameformat)
-          chain = $1
-          table = $2
-          protocol = $3
-          
+      chain = Regexp.last_match(1)
       value(:regex) !~ chain
-    }
-    
-    chain_resources.each {|res|
+    end
+
+    chain_resources.each do |res|
       res[:ensure] = :present
-    }
-    
+    end
+
     # override catalog
-    catalog.resources.select {|res|
-      res.class == Puppet::Type::Firewallchain
-    }.select{ |res|
-      not chain_resources.select {|r|
-        res[:name] == r[:name]
-      }.empty?
-    }.each {|res|
-      res[:ensure] = :present
-    }
-    
+    catalog_resources = catalog.resources.select do |res|
+      res.class == Puppet::Type::Firewallchain && !chain_resources.select { |r| res[:name] == r[:name] }.empty?
+    end
+    catalog_resources.each { |res| res[:ensure] = :present }
+
     chain_resources
   end
 end
