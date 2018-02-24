@@ -58,8 +58,10 @@ Puppet::Type.newtype(:g_firewall_protect) do
   end
 
   autorequire(:firewallchain) do
-    if catalog.resources.select { |x| x.class == Puppet::Type::Firewallchain && (x[:name] == self[:chain]) }.empty?
+    res = catalog.resource('Firewallchain', self[:chain])
+    unless res
       warning "Target Firewallchain with name of #{self[:chain]} not found in the catalog"
     end
+    [res]
   end
 end
