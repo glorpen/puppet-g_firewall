@@ -25,25 +25,28 @@ class Puppet::Type::Firewallchain
 
       rules_resources
     else
-      rules_resources = Puppet::Type.type(:firewall).instances
+      rules_all = Puppet::Type.type(:firewall).instances
+      rules_matched = {}
       protection_rules = catalog.resources.select { |r| r.is_a?(Puppet::Type.type(:g_firewall_protect)) && r[:chain] == self[:name] }
-      if !protection_rules.empty?
+      unless protection_rules.empty?
         protection_rules.each do |ignored_resource|
           # select only rules fetched from system
-          rules_resources.delete_if do |res|
-            ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) }.nil?
+          rules_all.each do |res|
+            next if rules_matched.include?(res[:name])
+            unless ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) }.nil?
+              rules_matched[res[:name]] = res
+            end
           end
         end
-        rules_resources.each do |r|
+        rules_matched.each do |_dummy, r|
           res = catalog.resource('Firewall', r[:name])
           r.provider.properties.each do |k, v|
             res[k.to_s] = v
           end
           res[:ensure] = :present
         end
-      else
-        []
       end
+      rules_matched.values
     end
   end
 end
