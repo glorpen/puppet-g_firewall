@@ -1,46 +1,49 @@
 
 # Module#prepend is not available in JRuby 1.9
 
+# load classes
+Puppet::Type.type(:firewallchain)
+
 # Patch upstream method
 class Puppet::Type::Firewallchain
-  def generate
-    return [] unless purge?
-
-    if defined? Nameformat
-      fmt = Nameformat
+  old_generate = instance_method(:generate)
+  
+  define_method(:generate) do
+    if purge?
+      rules_resources = old_generate.bind(self).()
+      # Remove rules which match created g_firewall_protect types
+      # and make them ensure=present again
+      catalog.resources.select { |r| r.is_a?(Puppet::Type.type(:g_firewall_protect)) && r[:chain] == self[:name] }.each do |ignored_resource|
+        rules_resources.delete_if do |res|
+          v = ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) }
+          if v
+            res[:ensure] = :present
+          end
+          v
+        end
+      end
+      
+      rules_resources
     else
-      fmt = NAME_FORMAT
+      rules_resources = Puppet::Type.type(:firewall).instances
+      protection_rules = catalog.resources.select { |r| r.is_a?(Puppet::Type.type(:g_firewall_protect)) && r[:chain] == self[:name] }
+      if !protection_rules.empty?
+        protection_rules.each do |ignored_resource|
+          # select only rules fetched from system
+          rules_resources.delete_if do |res|
+            ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) } === nil
+          end
+        end
+        rules_resources.each do |r|
+          res = catalog.resource('Firewall', r[:name])
+          r.provider.properties.each do |k,v|
+            res[k.to_s] = v
+          end
+          res[:ensure] = :present
+        end
+      else
+        []
+      end
     end
-
-    value(:name).match(fmt)
-    chain = Regexp.last_match(1)
-    table = Regexp.last_match(2)
-    protocol = Regexp.last_match(3)
-
-    provider = case protocol
-               when 'IPv4'
-                 :iptables
-               when 'IPv6'
-                 :ip6tables
-               end
-
-    # gather a list of all rules present on the system
-    rules_resources = Puppet::Type.type(:firewall).instances
-
-    # Keep only rules in this chain
-    rules_resources.delete_if { |res| (res[:provider] != provider || res.provider.properties[:table].to_s != table || res.provider.properties[:chain] != chain) }
-
-    # Remove rules which match our ignore filter
-    rules_resources.delete_if { |res| value(:ignore).find_index { |f| res.provider.properties[:line].match(f) } } if value(:ignore)
-
-    # Remove rules which match created g_firewall_protect types
-    catalog.resources.select { |r| r.is_a?(Puppet::Type.type(:g_firewall_protect)) && r[:chain] == self[:name] }.each do |ignored_resource|
-      rules_resources.delete_if { |res| ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) } }
-    end
-
-    # We mark all remaining rules for deletion, and then let the catalog override us on rules which should be present
-    rules_resources.each { |res| res[:ensure] = :absent }
-
-    rules_resources
   end
 end
