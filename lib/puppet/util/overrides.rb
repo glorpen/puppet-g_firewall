@@ -6,7 +6,13 @@ class Puppet::Type::Firewallchain
   def generate
     return [] unless purge?
 
-    value(:name).match(Nameformat)
+    if defined? Nameformat
+      fmt = Nameformat
+    else
+      fmt = NAME_FORMAT
+    end
+
+    value(:name).match(fmt)
     chain = Regexp.last_match(1)
     table = Regexp.last_match(2)
     protocol = Regexp.last_match(3)

@@ -30,19 +30,26 @@ Puppet::Type.newtype(:g_firewall_syschain) do
   autorequire(:firewallchain) do
     catalog.resources.map { |r|
       next unless r.is_a?(Puppet::Type.type(:firewallchain))
-      r[:name].match(Nameformat)
+      r[:name].match(nameformat)
       chain = Regexp.last_match(1)
       if chain == self[:name]
         r.name
       end
     }.compact
   end
+  
+  def nameformat
+    if defined? Nameformat
+      return Nameformat
+    end
+    NAME_FORMAT
+  end
 
   def generate
     chain_resources = Puppet::Type.type(:firewallchain).instances
 
     chain_resources.delete_if do |res|
-      res.provider.properties[:name].match(Nameformat)
+      res[:name].match(nameformat)
       chain = Regexp.last_match(1)
       value(:regex) !~ chain
     end
