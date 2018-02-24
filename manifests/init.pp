@@ -210,7 +210,11 @@ define g_firewall (
   if $protocol == undef {
     $_protocols = $::g_firewall::params::protocols
   } else {
-    $_protocols = intersection(flatten([$protocol]), $::g_firewall::params::protocols)
+    $_protocols = g_firewall::normalize_protocol(flatten([$protocol]))
+    $_diff = difference($_protocols,$::g_firewall::params::protocols)
+    if !empty($_diff) {
+      fail("Protocols ${_diff} are not enabled")
+    }
   }
 
   $_protocols.each |$p| {
