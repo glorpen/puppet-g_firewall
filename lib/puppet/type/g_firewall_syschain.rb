@@ -37,7 +37,7 @@ Puppet::Type.newtype(:g_firewall_syschain) do
       end
     }.compact
   end
-  
+
   def nameformat
     if defined? Nameformat
       return Nameformat
