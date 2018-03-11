@@ -20,37 +20,64 @@
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
-      "operatingsystemrelease": ["5", "6", "7"]
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
     },
     {
       "operatingsystem": "CentOS",
-      "operatingsystemrelease": ["5", "6", "7"]
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
     },
     {
       "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": ["6", "7"]
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     },
     {
       "operatingsystem": "Scientific",
-      "operatingsystemrelease": ["5", "6", "7"]
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
     },
     {
       "operatingsystem": "SLES",
-      "operatingsystemrelease": ["11 SP1", "12"]
+      "operatingsystemrelease": [
+        "11 SP1",
+        "12"
+      ]
     },
     {
       "operatingsystem": "Debian",
-      "operatingsystemrelease": ["6", "7", "8"]
+      "operatingsystemrelease": [
+        "6",
+        "7",
+        "8"
+      ]
     },
     {
       "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": ["14.04", "16.04"]
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04"
+      ]
     },
     {
       "operatingsystem": "Gentoo",
-      "operatingsystemrelease": ["1.0"]
+      "operatingsystemrelease": [
+        "1.0"
+      ]
     }
-],
+  ],
   "requirements": [
     {
       "name": "puppet",
@@ -59,5 +86,8 @@
   ],
   "tags": [
 
-  ]
+  ],
+  "pdk-version": "1.4.1",
+  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
+  "template-ref": "1.4.1-0-g52adbbb"
 }
