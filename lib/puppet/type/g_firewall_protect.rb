@@ -6,7 +6,7 @@
 # like we'll need to maintain this for some time perhaps.
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
 
-require 'puppet/util/overrides'
+require 'puppet/util/g_firewall_overrides'
 
 Puppet::Type.newtype(:g_firewall_protect) do
   @doc = <<-EOS
