@@ -65,7 +65,9 @@ When using *icmp* as *proto* parameter in ipv6 scope it is automatically transat
 Protecting unmanaged rules
 ==========================
 
-Example for *docker* (you will need more protect rules):
+Example for few *docker* chains.
+
+**WARNING** For proper parsing of docker-generated rules you will need ``puppetlabs/firewall>=1.12.0``.
 
 .. sourcecode:: puppet
 
