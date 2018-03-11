@@ -19,7 +19,7 @@ rvm:
 env:
   - PUPPET_GEM_VERSION="~> 4.0" CHECK=spec
   - PUPPET_GEM_VERSION="~> 5.0" CHECK=spec MOD_FIREWALL=1.10.0
-  - PUPPET_GEM_VERSION="~> 5.0" CHECK=spec
+  - PUPPET_GEM_VERSION="~> 5.0" CHECK=spec DEPLOY_TO_FORGE=yes
 matrix:
   fast_finish: true
   include:
@@ -33,10 +33,11 @@ notifications:
   email: false
 deploy:
   provider: puppetforge
-  user: puppet
+  user: glorpen
   password:
-    secure: ""
+    secure: WQlm1QgAgQzd1iN5Szy5Wlp+mq9r4Cz89n2OY7HfPsFvz/HQiFqZIBL6uUfgo50/kZjYf5CkU1xqp6G8MxX9CKjM0LvvG3IgKCoSuVw6hOy5FBMTXZxlfvvmeDCtrzhGxXMpzNbRcoeA8JlopAwmVJrues8s3NUh9iF8SSyc0KEbzts55uZhFdnS3YYjnXozM8zbW0XU5k8LVKtjTuHET10iu3YUp9s8gIVbNv1C/d+HbsAZz58Quw6UyV8nizCM1kK7h82HDFMYgrEAwwQz31GySvmz9lpeb+dCgWpVM6usIahbl93hfLazpDm28E/WvGUJ4jC3cE2Yj59ZHjm9Kzrt6uoy2V4thPYOck/rFRnxP69H/W9OwQ52avAb707Udvz0j7lDPFd6PNtRbxMAuzYkPh9OgHeuSQGZPDj6PeVgcWCmTKUARKNyB5+MnXDUHvIrnLgM7mr+JUe6MJiUcJdKnGBu5hoHmp7A/E5nYB3KnAPY4hTl5LnpGShRy9jgnGrIVpMWCBGmvH22uZkyrtAahG4Z1KeCYsjnVsGJBt4Jy6nSNQgMcT72Eucn2K6qsz3QFyjJBJj5G3/rhq+WL7lO3whfhgc+JSTQE/cEQ42TdDZznohR3IU8EceKxU8jlw7EjWbMZtvjk4Tsyz8Dc+BiC2T21wBLIysodbJwBcI=
   on:
     tags: true
     all_branches: true
     condition: "$DEPLOY_TO_FORGE = yes"
+    rvm: 2.4.1
