@@ -38,11 +38,10 @@ class Puppet::Type::Firewallchain
 
   def do_generate_smart
     rules_all = contained_rules
-    chains = Puppet::Type.type(:firewallchain).instances
 
     rules_matched = []
 
-    if self[:purge] == :false && !chains.select { |x| x[:name] == self[:name] }.empty?
+    if self[:purge] == :false && !Puppet::Type.type(:firewallchain).instances.select { |x| x[:name] == self[:name] }.empty?
       # only if this chain is set to purge=false and is managed by puppet
       rules_matched = rules_all
     else
@@ -65,6 +64,7 @@ class Puppet::Type::Firewallchain
     rules_matched.each do |r|
       res = catalog.resource('Firewall', r[:name])
       next if res.nil?
+      notice("g_firewall: protecting (smart) #{r[:name]}")
       r.provider.properties.each do |k, v|
         res[k.to_s] = v
       end
@@ -82,6 +82,7 @@ class Puppet::Type::Firewallchain
         rules_resources.delete_if do |res|
           v = ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) }
           if v
+            notice("g_firewall: protecting (normal) #{res[:name]} with #{ignored_resource[:name]}")
             res[:ensure] = :present
           end
           v
