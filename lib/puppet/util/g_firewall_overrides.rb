@@ -6,7 +6,6 @@ Puppet::Type.type(:firewallchain)
 
 # Patch upstream method
 class Puppet::Type::Firewallchain
-  @@all_firewall_rules = nil # rubocop:disable Style/ClassVars
   old_generate = instance_method(:generate)
 
   def nameformat
@@ -17,9 +16,11 @@ class Puppet::Type::Firewallchain
   end
 
   def contained_rules
-    if @@all_firewall_rules.nil?
-      @@all_firewall_rules = Puppet::Type.type(:firewall).instances # rubocop:disable Style/ClassVars
+    # from https://github.com/puppetlabs/puppetlabs-firewall/pull/333/files
+    if not self.class.class_variable_defined?(:@@firewall_rule_resources)
+      self.class.send(:class_variable_set,:@@firewall_rule_resources,Puppet::Type.type(:firewall).instances)
     end
+    rules_resources = self.class.send(:class_variable_get,:@@firewall_rule_resources).dup
 
     value(:name).match(nameformat)
     chain = Regexp.last_match(1)
@@ -33,7 +34,7 @@ class Puppet::Type::Firewallchain
                  :ip6tables
                end
 
-    @@all_firewall_rules.reject { |res| (res[:provider] != provider || res.provider.properties[:table].to_s != table || res.provider.properties[:chain] != chain) }
+    rules_resources.reject { |res| (res[:provider] != provider || res.provider.properties[:table].to_s != table || res.provider.properties[:chain] != chain) }
   end
 
   def do_generate_smart
