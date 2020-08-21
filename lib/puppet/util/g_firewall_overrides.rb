@@ -67,7 +67,7 @@ class Puppet::Type::Firewallchain
       next if res.nil?
       info("g_firewall: protecting (smart) #{r[:name]}")
       r.provider.properties.each do |k, v|
-        res[k.to_s] = v
+        res[k.to_s] = v.is_a?(Puppet::Util::Execution::ProcessOutput) ? v.to_s : v
       end
       res[:ensure] = :present
     end
