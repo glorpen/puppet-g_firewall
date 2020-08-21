@@ -53,4 +53,26 @@ describe 'g_firewall' do
       it { is_expected.to contain_firewall('200.IPv4 example') }
     end
   end
+
+  context 'with auto detected IPv4 protocol' do
+    let :params do
+      {
+        'proto_from_ip' => '127.0.0.1/32',
+      }
+    end
+
+    it { is_expected.to contain_firewall('200.IPv4 example') }
+    it { is_expected.not_to contain_firewall('200.IPv6 example') }
+  end
+
+  context 'with auto detected IPv6 protocol' do
+    let :params do
+      {
+        'proto_from_ip' => '2004:fe::',
+      }
+    end
+
+    it { is_expected.not_to contain_firewall('200.IPv4 example') }
+    it { is_expected.to contain_firewall('200.IPv6 example') }
+  end
 end
