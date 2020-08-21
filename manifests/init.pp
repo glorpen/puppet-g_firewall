@@ -13,6 +13,7 @@
 define g_firewall (
   $ensure = present,
   $protocol = undef,
+  Optional[Stdlib::IP::Address] $proto_from_ip = undef,
 
   $action = undef,
   $source = undef,
@@ -207,13 +208,20 @@ define g_firewall (
 
   include ::g_firewall::params
 
-  if $protocol == undef {
-    $_protocols = $::g_firewall::params::protocols
+  if $proto_from_ip == undef {
+    if $protocol == undef {
+      $_protocols = $::g_firewall::params::protocols
+    } else {
+      $_protocols = g_firewall::normalize_protocol(flatten([$protocol]))
+      $_diff = difference($_protocols,$::g_firewall::params::protocols)
+      if !empty($_diff) {
+        fail("Protocols ${_diff} are not enabled")
+      }
+    }
   } else {
-    $_protocols = g_firewall::normalize_protocol(flatten([$protocol]))
-    $_diff = difference($_protocols,$::g_firewall::params::protocols)
-    if !empty($_diff) {
-      fail("Protocols ${_diff} are not enabled")
+    $_protocols = $proto_from_ip?{
+      Stdlib::IP::Address::V4 => ['IPv4'],
+      Stdlib::IP::Address::V6 => ['IPv6']
     }
   }
 
