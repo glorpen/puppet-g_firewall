@@ -17,10 +17,10 @@ class Puppet::Type::Firewallchain
 
   def contained_rules
     # from https://github.com/puppetlabs/puppetlabs-firewall/pull/333/files
-    if not self.class.class_variable_defined?(:@@firewall_rule_resources)
-      self.class.send(:class_variable_set,:@@firewall_rule_resources,Puppet::Type.type(:firewall).instances)
+    unless self.class.class_variable_defined?(:@@firewall_rule_resources)
+      self.class.send(:class_variable_set, :@@firewall_rule_resources, Puppet::Type.type(:firewall).instances)
     end
-    rules_resources = self.class.send(:class_variable_get,:@@firewall_rule_resources).dup
+    rules_resources = self.class.send(:class_variable_get, :@@firewall_rule_resources).dup
 
     value(:name).match(nameformat)
     chain = Regexp.last_match(1)
