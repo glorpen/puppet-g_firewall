@@ -65,7 +65,7 @@ class Puppet::Type::Firewallchain
     rules_matched.each do |r|
       res = catalog.resource('Firewall', r[:name])
       next if res.nil?
-      info("g_firewall: protecting (smart) #{r[:name]}")
+      debug("g_firewall: protecting (smart) #{r[:name]}")
       r.provider.properties.each do |k, v|
         res[k.to_s] = v.is_a?(Puppet::Util::Execution::ProcessOutput) ? v.to_s : v
       end
@@ -83,7 +83,7 @@ class Puppet::Type::Firewallchain
         rules_resources.delete_if do |res|
           v = ignored_resource[:regex].find_index { |f| res.provider.properties[:line].match(f) }
           if v
-            info("g_firewall: protecting (normal) #{res[:name]} with #{ignored_resource[:name]}")
+            debug("g_firewall: protecting (normal) #{res[:name]} with #{ignored_resource[:name]}")
             res[:ensure] = :present
           end
           v
