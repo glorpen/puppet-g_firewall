@@ -45,6 +45,28 @@ And to create rules for both ip stacks:
      dport => '9101-9103'
    }
 
+Protocol detection
+------------------
+
+When creating rule with unknown ip address (IPv4 or IPv6) you can use ``proto_from_ip`` to rely on auto detection of proper ``g_firewall`` type.
+
+.. sourcecode:: puppet
+
+   g_firewall { "200 example rule":
+     # ...
+     proto_from_ip => '10.0.0.1'
+   }
+   # will only create g_firewall::ipv4 rule
+
+.. sourcecode:: puppet
+
+   g_firewall { "200 example rule":
+     # ...
+     proto_from_ip => '2004:1234::'
+   }
+   # will only create g_firewall::ipv6 rule
+
+
 Resource name prefixing
 -----------------------
 
